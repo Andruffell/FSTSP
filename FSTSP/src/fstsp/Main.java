@@ -1,4 +1,6 @@
-package main;
+package fstsp;
+
+import tsp.*;
 
 public class Main {
 
