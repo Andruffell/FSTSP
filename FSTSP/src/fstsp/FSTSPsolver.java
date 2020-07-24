@@ -12,8 +12,7 @@ public class FSTSPsolver {
 	
 	public int calcSavings(Node jNode, ArrayList<Integer> t, ArrayList<Node> Cprime, ArrayList<Node> truckRoute,
 			int truckAdjacencyMatrix[][], ArrayList<Subroute> truckSubroute, int UAVadjacencyMatrix[][]) {
-//		Node i = Cprime.get(Cprime.indexOf(j)-1);
-//		Node k = Cprime.get(Cprime.indexOf(j)+1);
+
 		int jIndex = jNode.getId();
 		int iIndex = truckRoute.get(truckRoute.indexOf(jNode)-1).getId();
 		int kIndex = truckRoute.get(truckRoute.indexOf(jNode)+1).getId();
@@ -56,5 +55,11 @@ public class FSTSPsolver {
 			}
 		}
 		return savings;
+	}
+	
+	public static void main(String[] args) {
+		
+		
+		
 	}
 }
