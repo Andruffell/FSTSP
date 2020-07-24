@@ -1,18 +1,18 @@
 package fstsp;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 public class Subroute {
-	private LinkedList<Node> nodes;
+	private ArrayList<Node> nodes;
 	private boolean UAVserved;
 	
-	public Subroute(LinkedList<Node> subroute, boolean uAVserved) {
+	public Subroute(ArrayList<Node> subroute, boolean uAVserved) {
 		super();
 		this.nodes = subroute;
 		UAVserved = uAVserved;
 	}
 
-	public LinkedList<Node> getNodes() {
+	public ArrayList<Node> getNodes() {
 		return nodes;
 	}
 
@@ -20,7 +20,7 @@ public class Subroute {
 		return UAVserved;
 	}
 
-	public void setNodes(LinkedList<Node> subroute) {
+	public void setNodes(ArrayList<Node> subroute) {
 		this.nodes = subroute;
 	}
 

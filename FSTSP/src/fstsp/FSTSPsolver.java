@@ -6,12 +6,12 @@ import java.util.ArrayList;
 
 public class FSTSPsolver {
 
-	private int sr = 1; //tempo di recupero dell'UAV
+	private static int sr = 1; //tempo di recupero dell'UAV
 	
 	public FSTSPsolver() {}
 	
-	public int calcSavings(Node jNode, ArrayList<Integer> t, ArrayList<Node> Cprime, ArrayList<Node> truckRoute,
-			int truckAdjacencyMatrix[][], ArrayList<Subroute> truckSubroute, int UAVadjacencyMatrix[][]) {
+	public static int calcSavings(Node jNode, ArrayList<Integer> t, ArrayList<Node> Cprime, ArrayList<Node> truckRoute,
+			int truckAdjacencyMatrix[][], ArrayList<Subroute> truckSubroutes, int UAVadjacencyMatrix[][]) {
 
 		int jIndex = jNode.getId();
 		int iIndex = truckRoute.get(truckRoute.indexOf(jNode)-1).getId();
@@ -19,7 +19,7 @@ public class FSTSPsolver {
 		
 		int savings = truckAdjacencyMatrix[iIndex][jIndex] + truckAdjacencyMatrix[jIndex][kIndex] -  truckAdjacencyMatrix[iIndex][kIndex];
 		
-		for (Subroute tS : truckSubroute) {
+		for (Subroute tS : truckSubroutes) {
 			if (tS.getNodes().contains(jNode) && tS.isUAVserved()) {
 				int a = 0;
 				int b = tS.getNodes().size()-1;
@@ -59,7 +59,63 @@ public class FSTSPsolver {
 	
 	public static void main(String[] args) {
 		
+		int truckAdjacencyMatrix[][] = {{0,5,15,5,7},
+										{5,0,5,20,3},
+										{15,5,0,4,1},
+										{5,20,4,0,3},
+										{7,3,1,3,0}};
+
+
+		TSPsolver tspNearestNeighbour = new TSPsolver();
+		tspNearestNeighbour.tsp(truckAdjacencyMatrix);
+	
+		System.out.println("Percorso del TSP: " + tspNearestNeighbour.getList());
 		
+		ArrayList<Node> truckRoute = new ArrayList<>();
+		System.out.print("Conversione a truckRoute: ");
+
+		for (Integer node : tspNearestNeighbour.getList()) {
+			if (node == 3) {
+				truckRoute.add(new Node(node, true, true));
+			}else if (node%2 == 1){
+				truckRoute.add(new Node(node, true, false));
+			} else {
+				truckRoute.add(new Node(node, false, false));
+			}
+			System.out.print("\t" + node);
+		}
+		
+		
+		ArrayList<Node> Cprime = new ArrayList<>();
+		
+		System.out.print("\nNodi che permettono la consegna con UAV: ");
+		for (Node node : truckRoute) {
+			if (node.isUAVeligible()) {
+				Cprime.add(node);
+				System.out.print("\t" + node.getId());
+			}
+		}	
+		
+		ArrayList<Subroute> truckSubroutes = new ArrayList<>();
+		truckSubroutes.add(new Subroute(truckRoute, true));
+
+		System.out.println("\nSottogiri del camion: " + truckSubroutes);
+		
+		ArrayList<Integer> t = tspNearestNeighbour.getTempiDiArrivo();
+		int M = Integer.MAX_VALUE;
+		
+		
+		int UAVadjacencyMatrix[][] = {{0,3,1,1,1},
+								      {3,0,1,1,2},
+								      {1,1,0,4,1},
+								      {1,1,4,0,1},
+								      {1,2,1,1,0}
+								      };
+		
+		for (Node j : Cprime) {
+			int savings = calcSavings(j, t, Cprime, truckRoute, truckAdjacencyMatrix, truckSubroutes, UAVadjacencyMatrix);
+			System.out.println("Saving " + j.getId() + " : " + savings);
+		}
 		
 	}
 }
