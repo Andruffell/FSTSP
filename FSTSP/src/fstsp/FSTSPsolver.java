@@ -135,6 +135,51 @@ public class FSTSPsolver {
 	}
 		return returnVal;
 }
+	
+	public static ArrayList<Integer> performUpdate(NodesToUpdate nodesToUpdate, ArrayList<Node> truckRoute, Subroute subroute, ArrayList<Subroute> truckSubroutes, ArrayList<Node> Cprime, ArrayList<Integer> t, int truckAdjacencyMatrix[][]) {
+		
+		ArrayList<Integer> newT = new ArrayList<>();
+		truckRoute.remove(nodesToUpdate.jStar);
+
+		if(subroute.isUAVserved()) {
+			for (Subroute sub : truckSubroutes) {
+				subroute.getNodes().remove(nodesToUpdate.jStar);
+			}
+			
+			ArrayList<Node> newList = (ArrayList<Node>) truckRoute.subList((truckRoute.indexOf(nodesToUpdate.iStar)), truckRoute.indexOf(nodesToUpdate.kStar));
+			Subroute newSubroute = new Subroute(newList, true);
+			truckSubroutes.add(newSubroute);
+			
+			Cprime.remove(nodesToUpdate.iStar);
+			Cprime.remove(nodesToUpdate.jStar);
+			Cprime.remove(nodesToUpdate.kStar);
+			
+		} else {
+				for (Subroute sub : truckSubroutes) {
+					subroute.getNodes().remove(nodesToUpdate.jStar);
+				}
+				
+				for (Subroute sub : truckSubroutes) {
+					if (sub.getNodes().contains(nodesToUpdate.iStar) && sub.getNodes().contains(nodesToUpdate.kStar)){
+						sub.getNodes().add(sub.getNodes().indexOf(nodesToUpdate.kStar), nodesToUpdate.jStar);
+					}
+				}
+				
+				truckRoute.add(truckRoute.indexOf(nodesToUpdate.kStar), nodesToUpdate.jStar);
+			}
+		
+		newT.add(0);
+		for(int l=1; l<truckRoute.size(); l++) {
+			int previousNodeIndex = truckRoute.get(l-1).getId();
+			int currentNodeIndex = truckRoute.get(l).getId();
+			newT.add(newT.get(l-1) + truckAdjacencyMatrix[previousNodeIndex][currentNodeIndex]);
+		}
+				
+		return newT;
+		}
+		
+
+	
 	public static void main(String[] args) {
 		
 		int truckAdjacencyMatrix[][] = {{0,5,15,5,7},
