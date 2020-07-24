@@ -7,6 +7,7 @@ import java.util.ArrayList;
 public class FSTSPsolver {
 
 	private static int sr = 1; //tempo di recupero dell'UAV
+	private static int sl = 1; //tempo di lancio dell'UAV
 	private static int droneBattery = 10; //e
 	
 	public FSTSPsolver() {}
@@ -83,6 +84,7 @@ public class FSTSPsolver {
 				if((t.get(bTauId) - t.get(aTauId) + cost) <= droneBattery) {
 					if(savings - cost > maxSavings) {
 						jNode.setUAVserved(false);
+						subroute.setUAVserved(false);
 						returnVal.jStar = jNode;
 						returnVal.iStar = iNode;
 						returnVal.kStar = kNode;
@@ -95,6 +97,44 @@ public class FSTSPsolver {
 		return returnVal;
 	}
 	
+	public static NodesToUpdate calcCostUAV(Node jNode, ArrayList<Integer> t, Subroute subroute, int UAVadjacencyMatrix[][], int savings, int maxSavings, ArrayList<Node> truckRoute, int truckAdjacencyMatrix[][]) {
+		
+		NodesToUpdate returnVal = new NodesToUpdate();
+		ArrayList<Node> subrouteNodes = subroute.getNodes();
+		
+		//Node aNode = subrouteNodes.get(0);
+		//Node bNode = subrouteNodes.get(subrouteNodes.size() - 1);
+		
+		for(int l = 0; l < subrouteNodes.size() - 1; l++) {
+			Node iNode = subrouteNodes.get(l);
+			Node kNode = subrouteNodes.get(l+1);
+			int tauprimeIJ = UAVadjacencyMatrix[iNode.getId()][jNode.getId()];
+			int tauprimeJK = UAVadjacencyMatrix[jNode.getId()][kNode.getId()];
+			
+			if(tauprimeIJ + tauprimeJK <= droneBattery  ) {
+				int tkPrime = 0;
+				
+				for(int m = 0; m < truckRoute.indexOf(kNode)-1; m++) {
+						tkPrime += truckAdjacencyMatrix[truckRoute.get(m).getId()][truckRoute.get(m+1).getId()];
+				}
+				
+				tkPrime = - truckAdjacencyMatrix[iNode.getId()][jNode.getId()] - truckAdjacencyMatrix[jNode.getId()][kNode.getId()] + truckAdjacencyMatrix[iNode.getId()][kNode.getId()];
+				int uavcost = Math.max(tkPrime - t.get(truckRoute.indexOf(iNode))+ sr + sl ,tauprimeIJ + tauprimeJK+ sr + sl  );
+				int cost = Math.max(0,uavcost -(tkPrime - t.get(truckRoute.indexOf(iNode))) );
+				if ( savings -cost > maxSavings ) {
+					jNode.setUAVserved(true);
+					subroute.setUAVserved(true);
+					returnVal.jStar = jNode;
+					returnVal.iStar = iNode;
+					returnVal.kStar = kNode;
+					returnVal.maxSavings = savings - cost;
+				}
+			}
+			
+		
+	}
+		return returnVal;
+}
 	public static void main(String[] args) {
 		
 		int truckAdjacencyMatrix[][] = {{0,5,15,5,7},
