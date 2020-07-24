@@ -7,6 +7,7 @@ import java.util.ArrayList;
 public class FSTSPsolver {
 
 	private static int sr = 1; //tempo di recupero dell'UAV
+	private static int droneBattery = 10; //e
 	
 	public FSTSPsolver() {}
 	
@@ -55,6 +56,43 @@ public class FSTSPsolver {
 			}
 		}
 		return savings;
+	}
+	
+	public static NodesToUpdate calcCostTruck(Node jNode, ArrayList<Integer> t, Subroute subroute, int truckAdjacencyMatrix[][], int savings, int maxSavings, ArrayList<Node> truckRoute) {
+		
+		NodesToUpdate returnVal = new NodesToUpdate();
+		
+		ArrayList<Node> subrouteNodes = subroute.getNodes();
+		
+		Node aNode = subrouteNodes.get(0);
+		Node bNode = subrouteNodes.get(subrouteNodes.size() - 1);
+		
+		for(int l = 0; l < subrouteNodes.size() - 1; l++) {
+			Node iNode = subrouteNodes.get(l);
+			Node kNode = subrouteNodes.get(l+1);
+			
+			int tauIJ = truckAdjacencyMatrix[iNode.getId()][jNode.getId()];
+			int tauJK = truckAdjacencyMatrix[jNode.getId()][kNode.getId()];
+			int tauIK = truckAdjacencyMatrix[iNode.getId()][kNode.getId()];
+			
+			int cost = tauIJ + tauJK - tauIK;
+			
+			if(cost < savings) {
+				int bTauId = truckRoute.indexOf(bNode);
+				int aTauId = truckRoute.indexOf(aNode);
+				if((t.get(bTauId) - t.get(aTauId) + cost) <= droneBattery) {
+					if(savings - cost > maxSavings) {
+						jNode.setUAVserved(false);
+						returnVal.jStar = jNode;
+						returnVal.iStar = iNode;
+						returnVal.kStar = kNode;
+						returnVal.maxSavings = savings - cost;
+					}
+				}
+			}
+		}
+		
+		return returnVal;
 	}
 	
 	public static void main(String[] args) {
