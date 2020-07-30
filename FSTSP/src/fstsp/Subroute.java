@@ -11,6 +11,12 @@ public class Subroute {
 		this.nodes = subroute;
 		UAVserved = uAVserved;
 	}
+	
+	public Subroute(ArrayList<Node> s) {
+		System.out.println("Costruttore di copia");
+		nodes = (ArrayList<Node>) s.clone();
+		UAVserved = false;
+	}
 
 	public ArrayList<Node> getNodes() {
 		return nodes;

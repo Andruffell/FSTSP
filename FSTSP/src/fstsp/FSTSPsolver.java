@@ -4,9 +4,6 @@ import tsp.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
-
-import javax.print.CancelablePrintJob;
-
 import parser.Parser;
 
 
@@ -14,7 +11,7 @@ public class FSTSPsolver {
 
 	private static double sr = 0.016667; //tempo di recupero dell'UAV
 	private static double sl = 0.016667; //tempo di lancio dell'UAV
-	private static double droneBattery = 0.666667; //e metterla nel caso a 40 
+	private static double droneBattery = 200;//0.666667; //e metterla nel caso a 40 
 	
 	public FSTSPsolver() {}
 	
@@ -24,7 +21,7 @@ public class FSTSPsolver {
 		Node iNode = truckRoute.get(truckRoute.indexOf(jNode)-1);
 		Node kNode = truckRoute.get(truckRoute.indexOf(jNode)+1);
 		
-		double savings = truckAdjacencyMatrix[iNode.getId()][jNode.getId()] + truckAdjacencyMatrix[jNode.getId()][kNode.getId()] -  truckAdjacencyMatrix[iNode.getId()][kNode.getId()];
+		double savings = truckAdjacencyMatrix[iNode.getId()][jNode.getId()] + truckAdjacencyMatrix[jNode.getId()][kNode.getId()] - truckAdjacencyMatrix[iNode.getId()][kNode.getId()];
 		
 		for (Subroute tS : truckSubroutes) {
 			if (tS.getNodes().contains(jNode) && tS.isUAVserved()) {
@@ -39,12 +36,12 @@ public class FSTSPsolver {
 				}
 
 				double tbPrime = 0.0;
-				
-				for(int l = 0; l < truckRoute.indexOf(b)-1; l++) {
-						tbPrime += truckAdjacencyMatrix[truckRoute.get(l).getId()][truckRoute.get(l+1).getId()];
-				}
-				
-				tbPrime = -truckAdjacencyMatrix[iNode.getId()][jNode.getId()] - truckAdjacencyMatrix[jNode.getId()][kNode.getId()] + truckAdjacencyMatrix[iNode.getId()][kNode.getId()];
+				tbPrime = t.get(truckRoute.indexOf(b));
+//				for(int l = 0; l < truckRoute.indexOf(b)-1; l++) {
+//						tbPrime += truckAdjacencyMatrix[truckRoute.get(l).getId()][truckRoute.get(l+1).getId()];
+//				}
+//				
+				tbPrime += -truckAdjacencyMatrix[iNode.getId()][jNode.getId()] - truckAdjacencyMatrix[jNode.getId()][kNode.getId()] + truckAdjacencyMatrix[iNode.getId()][kNode.getId()];
 				
 				double ta = t.get(truckRoute.indexOf(a));	//tempo di arrivo del truck in a
 				double tauPrimeAJPrime = UAVadjacencyMatrix[a.getId()][jPrime.getId()];	//costo dell'UAV tra il nodo a e il nodo jPrime
@@ -107,20 +104,20 @@ public class FSTSPsolver {
 		//Node aNode = subrouteNodes.get(0);
 		//Node bNode = subrouteNodes.get(subrouteNodes.size() - 1);
 		
-		for(int l = 0; l < subrouteNodes.size() - 1; l++) {
+		for(int l = 0; l < subrouteNodes.size() - 2; l++) {
 			Node iNode = subrouteNodes.get(l);
-			Node kNode = subrouteNodes.get(l+1);
+			Node kNode = subrouteNodes.get(l+2);
 			double tauprimeIJ = UAVadjacencyMatrix[iNode.getId()][jNode.getId()];
 			double tauprimeJK = UAVadjacencyMatrix[jNode.getId()][kNode.getId()];
 			
 			if(tauprimeIJ + tauprimeJK <= droneBattery  ) {
 				double tkPrime = 0;
-				
-				for(int m = 0; m < truckRoute.indexOf(kNode)-1; m++) {
-						tkPrime += truckAdjacencyMatrix[truckRoute.get(m).getId()][truckRoute.get(m+1).getId()];
-				}
-				
-				tkPrime = - truckAdjacencyMatrix[iNode.getId()][jNode.getId()] - truckAdjacencyMatrix[jNode.getId()][kNode.getId()] + truckAdjacencyMatrix[iNode.getId()][kNode.getId()];
+				tkPrime = t.get(truckRoute.indexOf(kNode));
+//				for(int m = 0; m < truckRoute.indexOf(kNode)-1; m++) {
+//						tkPrime += truckAdjacencyMatrix[truckRoute.get(m).getId()][truckRoute.get(m+1).getId()];
+//				}
+				double negativeTruck = - truckAdjacencyMatrix[iNode.getId()][jNode.getId()] - truckAdjacencyMatrix[jNode.getId()][kNode.getId()];
+				tkPrime +=  negativeTruck + truckAdjacencyMatrix[iNode.getId()][kNode.getId()];
 				double uavcost = Math.max(tkPrime - t.get(truckRoute.indexOf(iNode))+ sr + sl ,tauprimeIJ + tauprimeJK+ sr + sl  );
 				double cost = Math.max(0,uavcost -(tkPrime - t.get(truckRoute.indexOf(iNode))) );
 				System.out.println("cost UAV: " + cost);
@@ -142,16 +139,22 @@ public class FSTSPsolver {
 	
 	public static RouteToUpdate performUpdate(NodesToUpdate nodesToUpdate, ArrayList<Node> truckRoute, ArrayList<Subroute> truckSubroutes, ArrayList<Node> Cprime, ArrayList<Double> t, double truckAdjacencyMatrix[][]) {
 		
-		RouteToUpdate returnVal = new RouteToUpdate(truckRoute, truckSubroutes, Cprime, t);
+		RouteToUpdate returnVal = new RouteToUpdate(truckRoute, truckSubroutes, Cprime, new ArrayList<Double>());
 		
 		truckRoute.remove(nodesToUpdate.jStar);
 		
 		if(nodesToUpdate.jStar.isUAVserved()) {
 			for (Subroute sub : returnVal.truckSubroutes) {
 				sub.getNodes().remove(nodesToUpdate.jStar);
+				sub.getNodes().remove(nodesToUpdate.kStar);
 			}
 			
-			ArrayList<Node> newList = (ArrayList<Node>) truckRoute.subList((truckRoute.indexOf(nodesToUpdate.iStar)), truckRoute.indexOf(nodesToUpdate.kStar));
+//			ArrayList<Node> newList = (ArrayList<Node>) truckRoute.subList((truckRoute.indexOf(nodesToUpdate.iStar)), truckRoute.indexOf(nodesToUpdate.kStar));
+			ArrayList<Node> newList = new ArrayList<>();
+			int maxIndex = nodesToUpdate.kStar.getId() == 0 ? truckRoute.size() : truckRoute.indexOf(nodesToUpdate.kStar);
+			for(int i= truckRoute.indexOf(nodesToUpdate.iStar); i<maxIndex; i++) {
+				newList.add(truckRoute.get(i));
+			}
 			Subroute newSubroute = new Subroute(newList, true);
 			returnVal.truckSubroutes.add(newSubroute);
 			
@@ -222,7 +225,7 @@ public class FSTSPsolver {
 		}	
 		
 		ArrayList<Subroute> truckSubroutes = new ArrayList<>();
-		truckSubroutes.add(new Subroute(truckRoute, false));	//creazione truckSubroute
+		truckSubroutes.add(new Subroute(truckRoute));	//creazione truckSubroute
 
 //		System.out.println("\nSottogiri del camion: " + truckSubroutes);
 		
