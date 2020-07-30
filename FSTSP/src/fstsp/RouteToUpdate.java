@@ -6,10 +6,10 @@ public class RouteToUpdate {
 	public ArrayList<Node> truckRoute;
 	public ArrayList<Subroute> truckSubroutes;
 	public ArrayList<Node> Cprime;
-	public ArrayList<Integer> t;
+	public ArrayList<Double> t;
 	
 	public RouteToUpdate(ArrayList<Node> truckRoute, ArrayList<Subroute> truckSubroutes, ArrayList<Node> cprime,
-			ArrayList<Integer> t) {
+			ArrayList<Double> t) {
 		super();
 		this.truckRoute = truckRoute;
 		this.truckSubroutes = truckSubroutes;

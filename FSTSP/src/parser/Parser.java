@@ -1,4 +1,4 @@
-package fstsp;
+package parser;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -41,7 +41,7 @@ public class Parser {
 				break;
 				
 			case 2:
-				val = (double) st.nval;
+				val = ((double) st.nval)/20;
 				a[i][j] = val;
 				stato = 0;
 				break;
