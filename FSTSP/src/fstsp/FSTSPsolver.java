@@ -198,7 +198,7 @@ public class FSTSPsolver {
 
 		for (Integer node : tspNearestNeighbour.getList()) {
 			if (node == 3) {
-				truckRoute.add(new Node(node, true, true));
+				truckRoute.add(new Node(node, true, false));
 			}else if (node%2 == 1){
 				truckRoute.add(new Node(node, true, false));
 			} else {
@@ -219,7 +219,7 @@ public class FSTSPsolver {
 		}	
 		
 		ArrayList<Subroute> truckSubroutes = new ArrayList<>();
-		truckSubroutes.add(new Subroute(truckRoute, true));	//creazione truckSubroute
+		truckSubroutes.add(new Subroute(truckRoute, false));	//creazione truckSubroute
 
 //		System.out.println("\nSottogiri del camion: " + truckSubroutes);
 		
