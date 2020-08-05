@@ -77,7 +77,7 @@ public class FSTSPsolver {
 			double tauIK = truckAdjacencyMatrix[iNode.getId()][kNode.getId()];
 			
 			double cost = tauIJ + tauJK - tauIK;
-			System.out.println("cost truck: " + cost);
+//			System.out.println("cost truck: " + cost);
 			if(cost < savings) {
 				int bTauId = truckRoute.indexOf(bNode);
 				int aTauId = truckRoute.indexOf(aNode);
@@ -158,7 +158,7 @@ public class FSTSPsolver {
 			
 //			ArrayList<Node> newList = (ArrayList<Node>) truckRoute.subList((truckRoute.indexOf(nodesToUpdate.iStar)), truckRoute.indexOf(nodesToUpdate.kStar));
 			ArrayList<Node> newList = new ArrayList<>();
-			int maxIndex = nodesToUpdate.kStar.getId() == 0 ? truckRoute.size() : truckRoute.indexOf(nodesToUpdate.kStar);
+			int maxIndex = nodesToUpdate.kStar.getId() == 0 ? truckRoute.size()-1 : truckRoute.indexOf(nodesToUpdate.kStar);
 			for(int i= truckRoute.indexOf(nodesToUpdate.iStar); i<=maxIndex; i++) {
 				newList.add(truckRoute.get(i));
 			}
@@ -197,8 +197,8 @@ public class FSTSPsolver {
 
 	
 	public static void main(String[] args) throws IOException {
-		Parser TruckParser = new Parser("./src/MatriceTruck1.txt");
-		Parser UAVParser = new Parser("./src/MatriceUAV1.txt");
+		Parser TruckParser = new Parser("./src/MatriceTruck.txt");
+		Parser UAVParser = new Parser("./src/MatriceUAV.txt");
 		
 		double truckAdjacencyMatrix[][] = TruckParser.ReadFile();
 
@@ -212,7 +212,7 @@ public class FSTSPsolver {
 		
 		ArrayList<Node> truckRoute = new ArrayList<>();
 //		System.out.print("Conversione a truckRoute: ");
-		int canBeserved[] = {0,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,0,1,1,1,0};//{0,1,1,0,0,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,0};
+		int canBeserved[] = /*{0,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,0,1,1,1,0};*/{0,1,1,0,0,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,0};
 		
 		
 		for (Integer node : tspNearestNeighbour.getList()) {
@@ -259,7 +259,7 @@ public class FSTSPsolver {
 						nodesToUpdate = calcCostUAV(j, t, subroute, UAVadjacencyMatrix, savings, maxSavings, truckRoute, truckAdjacencyMatrix, nodesToUpdate);
 					}
 					maxSavings = nodesToUpdate.maxSavings;
-					System.out.println("maxsavings = " + maxSavings);
+//					System.out.println("maxsavings = " + maxSavings);
 				}
 			}
 			if (maxSavings > 0) {
