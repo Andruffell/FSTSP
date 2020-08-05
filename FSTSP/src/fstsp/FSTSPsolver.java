@@ -53,9 +53,9 @@ public class FSTSPsolver {
 		return savings;
 	}
 	
-	public static NodesToUpdate calcCostTruck(Node jNode, ArrayList<Double> t, Subroute subroute, double truckAdjacencyMatrix[][], double savings, double maxSavings, ArrayList<Node> truckRoute) {
+	public static NodesToUpdate calcCostTruck(Node jNode, ArrayList<Double> t, Subroute subroute, double truckAdjacencyMatrix[][], double savings, double maxSavings, ArrayList<Node> truckRoute, NodesToUpdate nodesToUpdate) {
 		
-		NodesToUpdate returnVal = new NodesToUpdate();
+		NodesToUpdate returnVal = nodesToUpdate;
 //		returnVal.maxSavings = maxSavings;
 		ArrayList<Node> subrouteNodes = subroute.getNodes();
 		
@@ -98,9 +98,9 @@ public class FSTSPsolver {
 		return returnVal;
 	}
 	
-	public static NodesToUpdate calcCostUAV(Node jNode, ArrayList<Double> t, Subroute subroute, double UAVadjacencyMatrix[][], double savings, double maxSavings, ArrayList<Node> truckRoute, double truckAdjacencyMatrix[][]) {
+	public static NodesToUpdate calcCostUAV(Node jNode, ArrayList<Double> t, Subroute subroute, double UAVadjacencyMatrix[][], double savings, double maxSavings, ArrayList<Node> truckRoute, double truckAdjacencyMatrix[][], NodesToUpdate nodesToUpdate) {
 		
-		NodesToUpdate returnVal = new NodesToUpdate();
+		NodesToUpdate returnVal = nodesToUpdate;
 		ArrayList<Node> subrouteNodes = subroute.getNodes();
 		if(subrouteNodes.contains(jNode)) {
 			int index = subrouteNodes.indexOf(jNode);
@@ -253,9 +253,9 @@ public class FSTSPsolver {
 				//System.out.println("Saving " + j.getId() + " : " + savings);
 				for (Subroute subroute : truckSubroutes) {
 					if (subroute.isUAVserved()) {
-						nodesToUpdate = calcCostTruck(j, t, subroute, truckAdjacencyMatrix, savings, maxSavings, truckRoute);
+						nodesToUpdate = calcCostTruck(j, t, subroute, truckAdjacencyMatrix, savings, maxSavings, truckRoute, nodesToUpdate);
 					} else {
-						nodesToUpdate = calcCostUAV(j, t, subroute, UAVadjacencyMatrix, savings, maxSavings, truckRoute, truckAdjacencyMatrix);
+						nodesToUpdate = calcCostUAV(j, t, subroute, UAVadjacencyMatrix, savings, maxSavings, truckRoute, truckAdjacencyMatrix, nodesToUpdate);
 					}
 					maxSavings = nodesToUpdate.maxSavings;
 					System.out.println("maxsavings = " + maxSavings);
