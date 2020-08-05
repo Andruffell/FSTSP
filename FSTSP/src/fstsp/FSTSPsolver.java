@@ -153,15 +153,16 @@ public class FSTSPsolver {
 		if(nodesToUpdate.jStar.isUAVserved()) {
 			for (Subroute sub : returnVal.truckSubroutes) {
 				sub.getNodes().remove(nodesToUpdate.jStar);
-				sub.getNodes().remove(nodesToUpdate.kStar);
+//				sub.getNodes().remove(nodesToUpdate.kStar);
 			}
 			
 //			ArrayList<Node> newList = (ArrayList<Node>) truckRoute.subList((truckRoute.indexOf(nodesToUpdate.iStar)), truckRoute.indexOf(nodesToUpdate.kStar));
 			ArrayList<Node> newList = new ArrayList<>();
 			int maxIndex = nodesToUpdate.kStar.getId() == 0 ? truckRoute.size() : truckRoute.indexOf(nodesToUpdate.kStar);
-			for(int i= truckRoute.indexOf(nodesToUpdate.iStar); i<maxIndex; i++) {
+			for(int i= truckRoute.indexOf(nodesToUpdate.iStar); i<=maxIndex; i++) {
 				newList.add(truckRoute.get(i));
 			}
+
 			Subroute newSubroute = new Subroute(newList, true);
 			returnVal.truckSubroutes.add(newSubroute);
 			
@@ -268,7 +269,7 @@ public class FSTSPsolver {
 				Cprime = newRoutes.Cprime;
 				t = newRoutes.t;
 				maxSavings = 0;
-				
+				nodesToUpdate = new NodesToUpdate();
 			} else {
 				stop = true;
 			}
