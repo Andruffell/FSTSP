@@ -11,7 +11,7 @@ public class FSTSPsolver {
 
 	private static double sr = 0.016667; //tempo di recupero dell'UAV
 	private static double sl = 0.016667; //tempo di lancio dell'UAV
-	private static double droneBattery = 40; //0.666667; //e metterla nel caso a 40 
+	private static double droneBattery = 0.666667; //e metterla nel caso a 40 
 	
 	public FSTSPsolver() {}
 	
@@ -56,7 +56,7 @@ public class FSTSPsolver {
 	public static NodesToUpdate calcCostTruck(Node jNode, ArrayList<Double> t, Subroute subroute, double truckAdjacencyMatrix[][], double savings, double maxSavings, ArrayList<Node> truckRoute) {
 		
 		NodesToUpdate returnVal = new NodesToUpdate();
-		
+//		returnVal.maxSavings = maxSavings;
 		ArrayList<Node> subrouteNodes = subroute.getNodes();
 		
 		Node aNode = subrouteNodes.get(0);
@@ -64,14 +64,20 @@ public class FSTSPsolver {
 		
 		for(int l = 0; l < subrouteNodes.size() - 1; l++) {
 			Node iNode = subrouteNodes.get(l);
+			if(iNode.equals(jNode)) {
+				iNode = subrouteNodes.get(l-1);
+			}
 			Node kNode = subrouteNodes.get(l+1);
+			if(kNode.equals(jNode)) {
+				kNode = subrouteNodes.get(l+1);
+			}
 			
 			double tauIJ = truckAdjacencyMatrix[iNode.getId()][jNode.getId()];
 			double tauJK = truckAdjacencyMatrix[jNode.getId()][kNode.getId()];
 			double tauIK = truckAdjacencyMatrix[iNode.getId()][kNode.getId()];
 			
 			double cost = tauIJ + tauJK - tauIK;
-			//System.out.println("cost truck: " + cost);
+			System.out.println("cost truck: " + cost);
 			if(cost < savings) {
 				int bTauId = truckRoute.indexOf(bNode);
 				int aTauId = truckRoute.indexOf(aNode);
@@ -120,7 +126,7 @@ public class FSTSPsolver {
 						double uavcost = Math.max(tkPrime - t.get(truckRoute.indexOf(iNode))+ sr + sl ,tauprimeIJ + tauprimeJK+ sr + sl  );
 						double cost = Math.max(0,uavcost -(tkPrime - t.get(truckRoute.indexOf(iNode))) );
 						//System.out.println("cost UAV: " + cost);
-						if ( savings -cost > maxSavings ) {
+						if ( savings - cost > maxSavings ) {
 							jNode.setUAVserved(true);
 							subroute.setUAVserved(true);
 							returnVal.jStar = jNode;
@@ -190,8 +196,8 @@ public class FSTSPsolver {
 
 	
 	public static void main(String[] args) throws IOException {
-		Parser TruckParser = new Parser("./src/MatriceTruck.txt");
-		Parser UAVParser = new Parser("./src/MatriceUAV.txt");
+		Parser TruckParser = new Parser("./src/MatriceTruck1.txt");
+		Parser UAVParser = new Parser("./src/MatriceUAV1.txt");
 		
 		double truckAdjacencyMatrix[][] = TruckParser.ReadFile();
 
@@ -205,7 +211,7 @@ public class FSTSPsolver {
 		
 		ArrayList<Node> truckRoute = new ArrayList<>();
 //		System.out.print("Conversione a truckRoute: ");
-		int canBeserved[] = {0,1,1,0,0,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,0};
+		int canBeserved[] = {0,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,0,1,1,1,0};//{0,1,1,0,0,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,0};
 		
 		
 		for (Integer node : tspNearestNeighbour.getList()) {
@@ -252,7 +258,7 @@ public class FSTSPsolver {
 						nodesToUpdate = calcCostUAV(j, t, subroute, UAVadjacencyMatrix, savings, maxSavings, truckRoute, truckAdjacencyMatrix);
 					}
 					maxSavings = nodesToUpdate.maxSavings;
-					//System.out.println("maxsavings = " + maxSavings);
+					System.out.println("maxsavings = " + maxSavings);
 				}
 			}
 			if (maxSavings > 0) {
