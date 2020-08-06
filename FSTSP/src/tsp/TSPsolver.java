@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 import parser.Parser;
+import parser.ParserData;
 
 public class TSPsolver {
 	
@@ -75,13 +76,13 @@ public class TSPsolver {
         
     
 	public static void main(String[] args) throws IOException {
-			Parser parser = new Parser("./src/MatriceTruck.txt");
-			
-			double adjacency_matrix[][] = parser.ReadFile();
+			ParserData p = new ParserData();
+			Parser parser = new Parser("./src/M4847.txt");
+			p = parser.ReadFile();
         	
            
             TSPsolver tspNearestNeighbour = new TSPsolver();
-            tspNearestNeighbour.tsp(adjacency_matrix);
+            tspNearestNeighbour.tsp(p.TruckMatrix);
             System.out.println("nodi attraversati: " + tspNearestNeighbour.getList());
             System.out.println("costo: "+ tspNearestNeighbour.getTempiDiArrivo());
     }

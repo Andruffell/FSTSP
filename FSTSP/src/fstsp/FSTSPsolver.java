@@ -5,6 +5,7 @@ import tsp.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import parser.Parser;
+import parser.ParserData;
 
 
 public class FSTSPsolver {
@@ -202,27 +203,28 @@ public class FSTSPsolver {
 
 	
 	public static void main(String[] args) throws IOException {
-		Parser TruckParser = new Parser("./src/MatriceTruck.txt");
-		Parser UAVParser = new Parser("./src/MatriceUAV.txt");
+		ParserData p = new ParserData();
+		Parser parser = new Parser("./src/M4847.txt");
 		
-		double truckAdjacencyMatrix[][] = TruckParser.ReadFile();
+		
+		p = parser.ReadFile();
 
 
 		TSPsolver tspNearestNeighbour = new TSPsolver();
 		
-		tspNearestNeighbour.tsp(truckAdjacencyMatrix);	//risoluzione con il TSP
+		tspNearestNeighbour.tsp(p.TruckMatrix);	//risoluzione con il TSP
 		
 		System.out.println(tspNearestNeighbour.getTempiDiArrivo() + " ");
 		System.out.println("Percorso del TSP: " + tspNearestNeighbour.getList());
 		
 		ArrayList<Node> truckRoute = new ArrayList<>();
 //		System.out.print("Conversione a truckRoute: ");
-		int canBeserved[] = /*{0,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,0,1,1,1,0};*/{0,1,1,0,0,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,0};
-		
+		ArrayList<Integer> canBeserved=new ArrayList<>(p.served);
+		System.out.println("Canbe served");
+		System.out.println(canBeserved);
 		
 		for (Integer node : tspNearestNeighbour.getList()) {
-			boolean served = canBeserved[node]==1?true:false; 
-			
+			boolean served = canBeserved.get(node)==1?true:false; 
 			truckRoute.add(new Node(node,served,false));	
 		}
 
@@ -246,8 +248,6 @@ public class FSTSPsolver {
 		
 		ArrayList<Double> t = tspNearestNeighbour.getTempiDiArrivo();
 		
-		double UAVadjacencyMatrix[][] = UAVParser.ReadFile();
-		
 		double maxSavings = 0; //maxSavings
 		boolean stop = false;
 		double savings = 0;
@@ -255,20 +255,20 @@ public class FSTSPsolver {
 		NodesToUpdate nodesToUpdate = new NodesToUpdate();
 		do {
 			for (Node j : Cprime) {
-				savings = calcSavings(j, t, Cprime, truckRoute, truckAdjacencyMatrix, truckSubroutes, UAVadjacencyMatrix);
+				savings = calcSavings(j, t, Cprime, truckRoute, p.TruckMatrix, truckSubroutes, p.UAVMatrix);
 				//System.out.println("Saving " + j.getId() + " : " + savings);
 				for (Subroute subroute : truckSubroutes) {
 					if (subroute.isUAVserved()) {
-						nodesToUpdate = calcCostTruck(j, t, subroute, truckAdjacencyMatrix, savings, maxSavings, truckRoute, nodesToUpdate);
+						nodesToUpdate = calcCostTruck(j, t, subroute, p.TruckMatrix, savings, maxSavings, truckRoute, nodesToUpdate);
 					} else {
-						nodesToUpdate = calcCostUAV(j, t, subroute, UAVadjacencyMatrix, savings, maxSavings, truckRoute, truckAdjacencyMatrix, nodesToUpdate);
+						nodesToUpdate = calcCostUAV(j, t, subroute, p.UAVMatrix, savings, maxSavings, truckRoute, p.TruckMatrix, nodesToUpdate);
 					}
 					maxSavings = nodesToUpdate.maxSavings;
 //					System.out.println("maxsavings = " + maxSavings);
 				}
 			}
 			if (maxSavings > 0) {
-				RouteToUpdate newRoutes = performUpdate(nodesToUpdate, truckRoute, truckSubroutes, Cprime, t, truckAdjacencyMatrix);
+				RouteToUpdate newRoutes = performUpdate(nodesToUpdate, truckRoute, truckSubroutes, Cprime, t, p.TruckMatrix);
 				truckRoute = newRoutes.truckRoute;
 				truckSubroutes = newRoutes.truckSubroutes;
 				Cprime = newRoutes.Cprime;

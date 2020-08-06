@@ -3,15 +3,15 @@ package parser;
 import java.util.ArrayList;
 
 public class ParserData {
-		double sl;
-		double sr;
-		double e;
-		int speedUav;
-		int speedTruck;
-		int dim;
-		ArrayList<Integer> served;
-		double[][] TruckMatrix;
-		double[][] UAVMatrix;
+		public double sl;
+		public double sr;
+		public double e;
+		public int speedUav;
+		public int speedTruck;
+		public int dim;
+		public ArrayList<Integer> served;
+		public double[][] TruckMatrix;
+		public double[][] UAVMatrix;
 		
 		public ParserData(double sl, double sr, double e, int speedUav, int speedTruck, int dim,
 				ArrayList<Integer> served, double[][] truckMatrix, double[][] uAVMatrix) {

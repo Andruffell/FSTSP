@@ -14,7 +14,7 @@ public class Parser {
 		st = new StreamTokenizer(buffer);
 		st.ordinaryChar('.');
 	}
-	private ParserData ReadFile() throws IOException {
+	public ParserData ReadFile() throws IOException {
 		ParserData a = new ParserData();
 		for(int i=0; i<=5;i++) {
 			if(st.nextToken()!= StreamTokenizer.TT_EOF) {
