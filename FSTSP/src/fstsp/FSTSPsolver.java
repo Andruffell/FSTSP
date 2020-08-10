@@ -10,7 +10,7 @@ import parser.ParserData;
 
 public class FSTSPsolver {
 
-	public static String fileName = "M5106.txt";
+	public static String fileName = "M5001.txt";
 	
 	private static double sr = 0.016667; //tempo di recupero dell'UAV
 	private static double sl = 0.016667; //tempo di lancio dell'UAV
@@ -172,6 +172,7 @@ public class FSTSPsolver {
 				for(Node n : newList) {
 					sub.getNodes().remove(n);
 				}
+				//if(sub.getNodes().isEmpty()) {returnVal.truckSubroutes.remove(sub);}
 			}
 			
 			Subroute newSubroute = new Subroute(newList, true);
