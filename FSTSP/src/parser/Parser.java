@@ -42,7 +42,7 @@ public class Parser {
 		}
 		st.nextToken();
 		st.nextToken();
-		a.served.add(0);
+		a.served.add(1);
 		for(int i=0; i<a.dim;i++) {
 			st.nextToken();
 			st.nextToken();
@@ -51,7 +51,7 @@ public class Parser {
 			}
 		st.nextToken();
 		st.nextToken();
-		a.served.add(0);
+		a.served.add(1);
 		
 		a.TruckMatrix = new double[a.dim+1][a.dim+1];
 		for(int i=0;i<=a.dim+1;i++) {
