@@ -41,7 +41,7 @@ public class FSTSPsolver {
 		
 		//per ogni subroute del truck
 		for (Subroute tS : truckSubroutes) {
-			//se contiene il nodo j ed è servita dall'UAV
+			//se contiene il nodo j ed ï¿½ servita dall'UAV
 			if (tS.getNodes().contains(jNode) && tS.isUAVserved()) {
 				//Prendiamo il primo e l'ultimo nodo
 				Node a = tS.getNodes().get(0);
@@ -50,7 +50,7 @@ public class FSTSPsolver {
 				Node jPrime = new Node();
 				//Per ogni nodo del tS
 				for (Node node : tS.getNodes()) {
-					//Se il nodo è servito dall'UAV allora lo salviamo in jPrime
+					//Se il nodo ï¿½ servito dall'UAV allora lo salviamo in jPrime
 					if (node.isUAVserved()) {
 						jPrime = node;
 					}
@@ -66,7 +66,7 @@ public class FSTSPsolver {
 				double ta = t.get(truckRoute.indexOf(a));
 				double tauPrimeAJPrime = UAVadjacencyMatrix[a.getId()][jPrime.getId()];	//costo dell'UAV tra il nodo a e il nodo jPrime
 				double tauPrimeJprimeB = UAVadjacencyMatrix[jPrime.getId()][b.getId()]; //costo dell'UAV tra il nodo jPrime e il nodo b
-				//Aggiornamento di savings che può essere negativo se il truck deve aspettare l'arrivo dell'UAV
+				//Aggiornamento di savings che puï¿½ essere negativo se il truck deve aspettare l'arrivo dell'UAV
 				savings = Math.min(savings, 
 						  tbPrime - (ta + tauPrimeAJPrime + tauPrimeJprimeB + sr));
 				return savings;
@@ -107,7 +107,7 @@ public class FSTSPsolver {
 			double tauIK = truckAdjacencyMatrix[iNode.getId()][kNode.getId()];
 			//Calcolo del costo totale
 			double cost = tauIJ + tauJK - tauIK;
-			//Se il costo è minore del saving
+			//Se il costo ï¿½ minore del saving
 			if(cost < savings) {
 				//Salvataggio degli indici del nodo a e del nodo b
 				int bTauId = truckRoute.indexOf(bNode);
@@ -154,14 +154,14 @@ public class FSTSPsolver {
 			for( int l =0;l<index;l++) {
 				//Prendo il nodo i di indice l
 				Node iNode = subrouteNodes.get(l);
-				//Per ogni m-esimo nodo che è successivo a j (a ritroso)
+				//Per ogni m-esimo nodo che ï¿½ successivo a j (a ritroso)
 				for(int m = subrouteNodes.size()-1; m > index; m--) {
 					//Prendo il nodo k di indice m
 					Node kNode = subrouteNodes.get(m);
 					//Calcolo i costi i-j e j-k
 					double tauprimeIJ = UAVadjacencyMatrix[iNode.getId()][jNode.getId()];
 					double tauprimeJK = UAVadjacencyMatrix[jNode.getId()][kNode.getId()];
-					//Se la loro somma è minore della durata della batteria del drone
+					//Se la loro somma ï¿½ minore della durata della batteria del drone
 					if(tauprimeIJ + tauprimeJK <= droneBattery  ) {
 						//Prendo il tempo di arrivo al nodo k
 						double tkPrime = 0;
@@ -172,7 +172,7 @@ public class FSTSPsolver {
 						//Calcolo il costo
 						double uavcost = Math.max(tkPrime - t.get(truckRoute.indexOf(iNode))+ sr + sl ,tauprimeIJ + tauprimeJK+ sr + sl  );
 						double cost = Math.max(0,uavcost -(tkPrime - t.get(truckRoute.indexOf(iNode))) );
-						//Se savings meno il costo è maggiore di max savings
+						//Se savings meno il costo ï¿½ maggiore di max savings
 						if ( savings - cost > maxSavings ) {
 							//Salvo i nodi j*, i*, k*
 							jNode.setUAVserved(true);
@@ -246,10 +246,6 @@ public class FSTSPsolver {
 						Subroute newSubroute = new Subroute(endtList, false);
 						newSubroutes.add(newSubroute);
 					}
-				}
-				
-				for(Node n : newList) {
-					sub.getNodes().remove(n);
 				}
 			}
 			
@@ -335,7 +331,7 @@ public class FSTSPsolver {
 				savings = calcSavings(j, t, cPrime, truckRoute, p.TruckMatrix, truckSubroutes, p.UAVMatrix);
 				//Per ogni subroute del truck
 				for (Subroute subroute : truckSubroutes) {
-					//Se è servita dall'UAV
+					//Se ï¿½ servita dall'UAV
 					if (subroute.isUAVserved()) {
 						//Calcola quanto risparmierebbe se non lo fosse
 						nodesToUpdate = calcCostTruck(j, t, subroute, p.TruckMatrix, savings, maxSavings, truckRoute, nodesToUpdate);
@@ -347,7 +343,7 @@ public class FSTSPsolver {
 					maxSavings = nodesToUpdate.maxSavings;
 				}
 			}
-			//Se c'è un risparmio
+			//Se c'ï¿½ un risparmio
 			if (maxSavings > 0) {
 				//Aggirona tutti i dati del problema
 				RouteToUpdate newRoutes = performUpdate(nodesToUpdate, truckRoute, truckSubroutes, cPrime, t, p.TruckMatrix);
