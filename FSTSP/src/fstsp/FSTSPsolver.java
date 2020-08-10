@@ -12,7 +12,7 @@ import parser.ParserData;
 
 public class FSTSPsolver {
 
-	public static String fileName = "M5001.txt";
+	public static String fileName = "M5106.txt";
 	
 	private static double sr = 0.016667; //tempo di recupero dell'UAV
 	private static double sl = 0.016667; //tempo di lancio dell'UAV
@@ -61,7 +61,6 @@ public class FSTSPsolver {
 	public static NodesToUpdate calcCostTruck(Node jNode, ArrayList<Double> t, Subroute subroute, double truckAdjacencyMatrix[][], double savings, double maxSavings, ArrayList<Node> truckRoute, NodesToUpdate nodesToUpdate) {
 		
 		NodesToUpdate returnVal = nodesToUpdate;
-//		returnVal.maxSavings = maxSavings;
 		ArrayList<Node> subrouteNodes = subroute.getNodes();
 		
 		Node aNode = subrouteNodes.get(0);
@@ -82,7 +81,6 @@ public class FSTSPsolver {
 			double tauIK = truckAdjacencyMatrix[iNode.getId()][kNode.getId()];
 			
 			double cost = tauIJ + tauJK - tauIK;
-//			System.out.println("cost truck: " + cost);
 			if(cost < savings) {
 				int bTauId = truckRoute.indexOf(bNode);
 				int aTauId = truckRoute.indexOf(aNode);
@@ -94,7 +92,6 @@ public class FSTSPsolver {
 						returnVal.iStar = iNode;
 						returnVal.kStar = kNode;
 						returnVal.maxSavings = savings - cost;
-						//System.out.println("ciclo truck");
 					}
 				}
 			}
@@ -109,13 +106,6 @@ public class FSTSPsolver {
 		ArrayList<Node> subrouteNodes = subroute.getNodes();
 		if(subrouteNodes.contains(jNode)) {
 			int index = subrouteNodes.indexOf(jNode);
-		//Node aNode = subrouteNodes.get(0);
-		//Node bNode = subrouteNodes.get(subrouteNodes.size() - 1);
-		
-		/*for(int l = 0; l < subrouteNodes.size() - 2; l++) {
-			Node iNode = subrouteNodes.get(l);
-			Node kNode = subrouteNodes.get(l+2);
-			*/
 			
 			for( int l =0;l<index;l++) {
 				Node iNode = subrouteNodes.get(l);
@@ -130,7 +120,6 @@ public class FSTSPsolver {
 						tkPrime +=  negativeTruck + truckAdjacencyMatrix[iNode.getId()][kNode.getId()];
 						double uavcost = Math.max(tkPrime - t.get(truckRoute.indexOf(iNode))+ sr + sl ,tauprimeIJ + tauprimeJK+ sr + sl  );
 						double cost = Math.max(0,uavcost -(tkPrime - t.get(truckRoute.indexOf(iNode))) );
-						//System.out.println("cost UAV: " + cost);
 						if ( savings - cost > maxSavings ) {
 							jNode.setUAVserved(true);
 							subroute.setUAVserved(true);
@@ -138,7 +127,6 @@ public class FSTSPsolver {
 							returnVal.iStar = iNode;
 							returnVal.kStar = kNode;
 							returnVal.maxSavings = savings - cost;
-							//System.out.println("ciclo UAV");
 						}
 					}
 					
@@ -206,13 +194,6 @@ public class FSTSPsolver {
 			returnVal.truckSubroutes.addAll(newSubroutes);
 			returnVal.truckSubroutes.remove(removeSubroute);
 			
-//			for(Subroute sub : returnVal.truckSubroutes) {
-//				for(Node n : newList) {
-//					sub.getNodes().remove(n);
-//				}
-//				//if(sub.getNodes().isEmpty()) {returnVal.truckSubroutes.remove(sub);}
-//			}
-			
 			Subroute newSubroute = new Subroute(newList, true);
 			returnVal.truckSubroutes.add(newSubroute);
 				
@@ -261,7 +242,6 @@ public class FSTSPsolver {
 		System.out.println("Percorso del TSP: " + tspNearestNeighbour.getList());
 		
 		ArrayList<Node> truckRoute = new ArrayList<>();
-//		System.out.print("Conversione a truckRoute: ");
 		ArrayList<Integer> canBeserved=new ArrayList<>(p.served);
 		System.out.print("Can be served : ");
 		System.out.println(canBeserved);
@@ -273,18 +253,15 @@ public class FSTSPsolver {
 		
 		ArrayList<Node> Cprime = new ArrayList<>(); 	//creazione Cprime
 		
-//		System.out.print("\nNodi che permettono la consegna con UAV: ");
 		for (Node node : truckRoute) {
 			if (node.isUAVeligible()) {
 				Cprime.add(node);
-//				System.out.print("\t" + node.getId());
 			}
 		}	
 		
 		ArrayList<Subroute> truckSubroutes = new ArrayList<>();
 		truckSubroutes.add(new Subroute(truckRoute));	//creazione truckSubroute
 
-//		System.out.println("\nSottogiri del camion: " + truckSubroutes);
 		
 		ArrayList<Double> t = tspNearestNeighbour.getTempiDiArrivo();
 		
@@ -296,7 +273,6 @@ public class FSTSPsolver {
 		do {
 			for (Node j : Cprime) {
 				savings = calcSavings(j, t, Cprime, truckRoute, p.TruckMatrix, truckSubroutes, p.UAVMatrix);
-				//System.out.println("Saving " + j.getId() + " : " + savings);
 				for (Subroute subroute : truckSubroutes) {
 					if (subroute.isUAVserved()) {
 						nodesToUpdate = calcCostTruck(j, t, subroute, p.TruckMatrix, savings, maxSavings, truckRoute, nodesToUpdate);
@@ -304,7 +280,6 @@ public class FSTSPsolver {
 						nodesToUpdate = calcCostUAV(j, t, subroute, p.UAVMatrix, savings, maxSavings, truckRoute, p.TruckMatrix, nodesToUpdate);
 					}
 					maxSavings = nodesToUpdate.maxSavings;
-//					System.out.println("maxsavings = " + maxSavings);
 				}
 			}
 			if (maxSavings > 0) {

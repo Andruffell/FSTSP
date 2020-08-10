@@ -12,8 +12,8 @@ public class Subroute {
 		UAVserved = uAVserved;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Subroute(ArrayList<Node> s) {
-	
 		nodes  = (ArrayList<Node>) s.clone();
 		UAVserved = false;
 	}
