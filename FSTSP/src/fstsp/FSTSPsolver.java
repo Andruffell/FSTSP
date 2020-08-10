@@ -169,9 +169,15 @@ public class FSTSPsolver {
 //				sub.getNodes().remove(nodesToUpdate.kStar);
 //			}
 			
+			for(Subroute sub : returnVal.truckSubroutes) {
+				for(Node n : newList) {
+					sub.getNodes().remove(n);
+				}
+			}
+			
 			Subroute newSubroute = new Subroute(newList, true);
 			returnVal.truckSubroutes.add(newSubroute);
-			
+				
 			returnVal.Cprime.remove(nodesToUpdate.iStar);
 			returnVal.Cprime.remove(nodesToUpdate.jStar);
 			returnVal.Cprime.remove(nodesToUpdate.kStar);
