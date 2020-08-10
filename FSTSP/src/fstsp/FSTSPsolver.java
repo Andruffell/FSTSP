@@ -12,7 +12,7 @@ import parser.ParserData;
 
 public class FSTSPsolver {
 
-	public static String fileName = "M5106.txt";
+	public static String fileName = "M4849.txt";
 	
 	private static double sr = 0.016667; //tempo di recupero dell'UAV in numero di ore (0.016 = 1 minuto)
 	private static double sl = 0.016667; //tempo di lancio dell'UAV in numero di ore (0.016 = 1 minuto)
@@ -188,7 +188,6 @@ public class FSTSPsolver {
 		}
 		return returnVal;
 }
-	
 	/**
 	 * Salva i nodi da aggiornare
 	 * @param nodesToUpdate nodi da aggiornare
@@ -289,15 +288,12 @@ public class FSTSPsolver {
 		Parser parser = new Parser("./src/data/" + fileName);
 		p = parser.ReadFile();
 
+		long startTSPTime = System.currentTimeMillis();
 		//Risoluzione del TSP considerando solo il camion tramite euristica nearest neighbour
 		TSPsolver tspNearestNeighbour = new TSPsolver();
 		tspNearestNeighbour.tsp(p.TruckMatrix);
 		
-		System.out.println("Risoluzione TSP");
-		System.out.println("Percorso del TSP : " + tspNearestNeighbour.getList());
-		System.out.println("Tempi di arrivo : " + tspNearestNeighbour.getTempiDiArrivo());
-
-		System.out.println("\nRisoluzione con UAV");
+		long startTime = System.currentTimeMillis();
 		//Inizializzazione della truck route e del vettore canBeServed
 		ArrayList<Node> truckRoute = new ArrayList<>();
 		ArrayList<Integer> cannotBeServed = new ArrayList<>(p.served);
@@ -358,8 +354,17 @@ public class FSTSPsolver {
 				stop = true;
 			}
 		} while (!stop);
-		
+		long endTime = System.currentTimeMillis();
+		long timeSpanTSP = startTime-startTSPTime;
+		long timeSpan = endTime-startTime;
 		//Stampa dei risultati
+		
+		System.out.println("Risoluzione TSP");
+		System.out.println("Tempo di esecuzione del TSP: " + timeSpanTSP + "ms");
+		System.out.println("Percorso del TSP : " + tspNearestNeighbour.getList());
+		System.out.println("Tempi di arrivo : " + tspNearestNeighbour.getTempiDiArrivo());
+		System.out.println("\nRisoluzione con UAV");
+		System.out.println("Tempo di esecuzione di FSTSP: " + timeSpan + "ms");
 		stampa(truckRoute, truckSubroutes, t);
 	}
 	
