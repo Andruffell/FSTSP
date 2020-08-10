@@ -117,7 +117,7 @@ public class FSTSPsolver {
 			
 			for( int l =0;l<index;l++) {
 				Node iNode = subrouteNodes.get(l);
-				for(int m =index+1;m <subrouteNodes.size();m++) {
+				for(int m = subrouteNodes.size()-1; m > index; m--) {
 					Node kNode = subrouteNodes.get(m);
 					double tauprimeIJ = UAVadjacencyMatrix[iNode.getId()][jNode.getId()];
 					double tauprimeJK = UAVadjacencyMatrix[jNode.getId()][kNode.getId()];
