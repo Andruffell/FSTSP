@@ -10,6 +10,8 @@ import parser.ParserData;
 
 public class FSTSPsolver {
 
+	public static String fileName = "M5106.txt";
+	
 	private static double sr = 0.016667; //tempo di recupero dell'UAV
 	private static double sl = 0.016667; //tempo di lancio dell'UAV
 	private static double droneBattery = 0.666667; //e metterla nel caso a 40 
@@ -207,8 +209,7 @@ public class FSTSPsolver {
 	
 	public static void main(String[] args) throws IOException {
 		ParserData p = new ParserData();
-		Parser parser = new Parser("./src/M4847.txt");
-		
+		Parser parser = new Parser("./src/data/" + fileName);
 		
 		p = parser.ReadFile();
 
@@ -223,16 +224,13 @@ public class FSTSPsolver {
 		ArrayList<Node> truckRoute = new ArrayList<>();
 //		System.out.print("Conversione a truckRoute: ");
 		ArrayList<Integer> canBeserved=new ArrayList<>(p.served);
-		System.out.println("Can be served");
+		System.out.print("Can be served : ");
 		System.out.println(canBeserved);
 		
 		for (Integer node : tspNearestNeighbour.getList()) {
 			boolean served = canBeserved.get(node)==1?true:false; 
 			truckRoute.add(new Node(node,served,false));	
-		}
-
-		
-		
+		}	
 		
 		ArrayList<Node> Cprime = new ArrayList<>(); 	//creazione Cprime
 		
