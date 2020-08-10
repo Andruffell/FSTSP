@@ -153,7 +153,9 @@ public class FSTSPsolver {
 		
 		if(nodesToUpdate.jStar.isUAVserved()) {
 			for (Subroute sub : returnVal.truckSubroutes) {
-				sub.getNodes().remove(nodesToUpdate.jStar);
+				if(sub.getNodes().remove(nodesToUpdate.jStar)) {
+					sub.setUAVserved(false);
+				}
 //				sub.getNodes().remove(nodesToUpdate.kStar);
 			}
 			
@@ -163,11 +165,6 @@ public class FSTSPsolver {
 			for(int i= truckRoute.indexOf(nodesToUpdate.iStar); i<=maxIndex; i++) {
 				newList.add(truckRoute.get(i));
 			}
-
-//			for (Subroute sub : returnVal.truckSubroutes) {
-//				sub.getNodes().remove(nodesToUpdate.iStar);
-//				sub.getNodes().remove(nodesToUpdate.kStar);
-//			}
 			
 			for(Subroute sub : returnVal.truckSubroutes) {
 				for(Node n : newList) {
@@ -226,7 +223,7 @@ public class FSTSPsolver {
 		ArrayList<Node> truckRoute = new ArrayList<>();
 //		System.out.print("Conversione a truckRoute: ");
 		ArrayList<Integer> canBeserved=new ArrayList<>(p.served);
-		System.out.println("Canbe served");
+		System.out.println("Can be served");
 		System.out.println(canBeserved);
 		
 		for (Integer node : tspNearestNeighbour.getList()) {
