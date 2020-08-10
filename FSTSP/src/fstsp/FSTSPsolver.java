@@ -4,6 +4,8 @@ import tsp.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.ListIterator;
+
 import parser.Parser;
 import parser.ParserData;
 
@@ -158,22 +160,58 @@ public class FSTSPsolver {
 				if(sub.getNodes().remove(nodesToUpdate.jStar)) {
 					sub.setUAVserved(false);
 				}
-//				sub.getNodes().remove(nodesToUpdate.kStar);
 			}
 			
-//			ArrayList<Node> newList = (ArrayList<Node>) truckRoute.subList((truckRoute.indexOf(nodesToUpdate.iStar)), truckRoute.indexOf(nodesToUpdate.kStar));
 			ArrayList<Node> newList = new ArrayList<>();
 			int maxIndex = nodesToUpdate.kStar.getId() == 0 ? truckRoute.size()-1 : truckRoute.indexOf(nodesToUpdate.kStar);
 			for(int i= truckRoute.indexOf(nodesToUpdate.iStar); i<=maxIndex; i++) {
 				newList.add(truckRoute.get(i));
 			}
 			
-			for(Subroute sub : returnVal.truckSubroutes) {
+			ArrayList<Subroute> newSubroutes = new ArrayList<>();
+			Subroute removeSubroute = null;
+			
+			for (Subroute sub : returnVal.truckSubroutes) {
+				if (sub.getNodes().contains(nodesToUpdate.iStar) && sub.getNodes().contains(nodesToUpdate.kStar)) {
+					removeSubroute = sub;
+					int iIndex = sub.getNodes().indexOf(nodesToUpdate.iStar);
+					ListIterator<Node> liti = sub.getNodes().listIterator(iIndex);
+					if (liti.hasPrevious()) {
+						ArrayList<Node> startList = new ArrayList<>();
+						for (int i = 0; i<=iIndex; i++) {
+							startList.add(sub.getNodes().get(i));
+						}
+						Subroute newSubroute = new Subroute(startList, false);
+						newSubroutes.add(newSubroute);
+					}
+
+					int kIndex = sub.getNodes().indexOf(nodesToUpdate.kStar);
+					ListIterator<Node> litk = sub.getNodes().listIterator(kIndex);
+
+					if (litk.hasNext()) {
+						ArrayList<Node> endtList = new ArrayList<>();
+						for (int i = kIndex; i<sub.getNodes().size(); i++) {
+							endtList.add(sub.getNodes().get(i));
+						}
+						Subroute newSubroute = new Subroute(endtList, false);
+						newSubroutes.add(newSubroute);
+					}
+				}
+				
 				for(Node n : newList) {
 					sub.getNodes().remove(n);
 				}
-				//if(sub.getNodes().isEmpty()) {returnVal.truckSubroutes.remove(sub);}
 			}
+			
+			returnVal.truckSubroutes.addAll(newSubroutes);
+			returnVal.truckSubroutes.remove(removeSubroute);
+			
+//			for(Subroute sub : returnVal.truckSubroutes) {
+//				for(Node n : newList) {
+//					sub.getNodes().remove(n);
+//				}
+//				//if(sub.getNodes().isEmpty()) {returnVal.truckSubroutes.remove(sub);}
+//			}
 			
 			Subroute newSubroute = new Subroute(newList, true);
 			returnVal.truckSubroutes.add(newSubroute);
