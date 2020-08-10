@@ -12,7 +12,7 @@ import parser.ParserData;
 
 public class FSTSPsolver {
 
-	public static String fileName = "M4849.txt";
+	public static String fileName = "M5106.txt";
 	
 	private static double sr = 0.016667; //tempo di recupero dell'UAV in numero di ore (0.016 = 1 minuto)
 	private static double sl = 0.016667; //tempo di lancio dell'UAV in numero di ore (0.016 = 1 minuto)
@@ -193,33 +193,37 @@ public class FSTSPsolver {
 	 * @param nodesToUpdate nodi da aggiornare
 	 * @param truckRoute route del truck
 	 * @param truckSubroutes subroutes del truck
-	 * @param Cprime vettore dei nodi che possono essere serviti dall'UAV
+	 * @param cPrime vettore dei nodi che possono essere serviti dall'UAV
 	 * @param t vettore dei tempi di arrivo
 	 * @param truckAdjacencyMatrix matrice di adiacenza del truck
 	 * @return i nodi aggironati
 	 */
-	public static RouteToUpdate performUpdate(NodesToUpdate nodesToUpdate, ArrayList<Node> truckRoute, ArrayList<Subroute> truckSubroutes, ArrayList<Node> Cprime, ArrayList<Double> t, double truckAdjacencyMatrix[][]) {
+	public static RouteToUpdate performUpdate(NodesToUpdate nodesToUpdate, ArrayList<Node> truckRoute, ArrayList<Subroute> truckSubroutes, ArrayList<Node> cPrime, ArrayList<Double> t, double truckAdjacencyMatrix[][]) {
 		
-		//Inizializzioni variabili
-		RouteToUpdate returnVal = new RouteToUpdate(truckRoute, truckSubroutes, Cprime, new ArrayList<Double>());
+		//Inizializzione del valore di ritorno
+		RouteToUpdate returnVal = new RouteToUpdate(truckRoute, truckSubroutes, cPrime, new ArrayList<Double>());
+		//Eliminazione del nodo j* dalla truckRoute
 		truckRoute.remove(nodesToUpdate.jStar);
 		
+		//Se il nodo j* è servito dall'UAV
 		if(nodesToUpdate.jStar.isUAVserved()) {
+			//Eliminazione del nodo j* dalle subroute del truck
 			for (Subroute sub : returnVal.truckSubroutes) {
 				if(sub.getNodes().remove(nodesToUpdate.jStar)) {
 					sub.setUAVserved(false);
 				}
 			}
 			
+			//Creazione della nuova subroute
 			ArrayList<Node> newList = new ArrayList<>();
 			int maxIndex = nodesToUpdate.kStar.getId() == 0 ? truckRoute.size()-1 : truckRoute.indexOf(nodesToUpdate.kStar);
 			for(int i= truckRoute.indexOf(nodesToUpdate.iStar); i<=maxIndex; i++) {
 				newList.add(truckRoute.get(i));
 			}
 			
+			//Separazione delle subroute del truck
 			ArrayList<Subroute> newSubroutes = new ArrayList<>();
 			Subroute removeSubroute = null;
-			
 			for (Subroute sub : returnVal.truckSubroutes) {
 				if (sub.getNodes().contains(nodesToUpdate.iStar) && sub.getNodes().contains(nodesToUpdate.kStar)) {
 					removeSubroute = sub;
@@ -246,32 +250,37 @@ public class FSTSPsolver {
 						newSubroutes.add(newSubroute);
 					}
 				}
-			}
-			
+			}			
 			returnVal.truckSubroutes.addAll(newSubroutes);
 			returnVal.truckSubroutes.remove(removeSubroute);
 			
+			//Aggiunta della nuova subroute servita dall'UAV
 			Subroute newSubroute = new Subroute(newList, true);
 			returnVal.truckSubroutes.add(newSubroute);
 				
-			returnVal.Cprime.remove(nodesToUpdate.iStar);
-			returnVal.Cprime.remove(nodesToUpdate.jStar);
-			returnVal.Cprime.remove(nodesToUpdate.kStar);
+			//rimozione dei nodi i*,j*,k* da cPrime
+			returnVal.cPrime.remove(nodesToUpdate.iStar);
+			returnVal.cPrime.remove(nodesToUpdate.jStar);
+			returnVal.cPrime.remove(nodesToUpdate.kStar);
 			
 		} else {
+				//Altrimenti eliminazione del nodo j* dalle subroute del truck
 				for (Subroute sub : returnVal.truckSubroutes) {
 					sub.getNodes().remove(nodesToUpdate.jStar);
 				}
-				
+				//Per ogni subroute del truck
 				for (Subroute sub : returnVal.truckSubroutes) {
+					//Se la subroute contiene i* e k*
 					if (sub.getNodes().contains(nodesToUpdate.iStar) && sub.getNodes().contains(nodesToUpdate.kStar)){
+						//Aggiunta del nodo j* tra i nodi i* e k*
 						sub.getNodes().add(sub.getNodes().indexOf(nodesToUpdate.kStar), nodesToUpdate.jStar);
 					}
 				}
-				
+				//Aggiunta del nodo j* alla truckRoute
 				returnVal.truckRoute.add(returnVal.truckRoute.indexOf(nodesToUpdate.kStar), nodesToUpdate.jStar);
 			}
 		
+		//Calcolo dei nuovi tempi di arrivo del truck per ogni nodo della truckRoute 
 		returnVal.t.add(0.0);
 		for(int l=1; l<returnVal.truckRoute.size(); l++) {
 			int previousNodeIndex = returnVal.truckRoute.get(l-1).getId();
@@ -345,7 +354,7 @@ public class FSTSPsolver {
 				RouteToUpdate newRoutes = performUpdate(nodesToUpdate, truckRoute, truckSubroutes, cPrime, t, p.TruckMatrix);
 				truckRoute = newRoutes.truckRoute;
 				truckSubroutes = newRoutes.truckSubroutes;
-				cPrime = newRoutes.Cprime;
+				cPrime = newRoutes.cPrime;
 				t = newRoutes.t;
 				maxSavings = 0;
 				nodesToUpdate = new NodesToUpdate();
@@ -365,6 +374,7 @@ public class FSTSPsolver {
 		System.out.println("Tempi di arrivo : " + tspNearestNeighbour.getTempiDiArrivo());
 		System.out.println("\nRisoluzione con UAV");
 		System.out.println("Tempo di esecuzione di FSTSP: " + timeSpan + "ms");
+		System.out.println("Saving totale : " + (tspNearestNeighbour.getTempiDiArrivo().get(tspNearestNeighbour.getTempiDiArrivo().size()-1) - t.get(t.size()-1))*60 + " minuti");
 		stampa(truckRoute, truckSubroutes, t);
 	}
 	

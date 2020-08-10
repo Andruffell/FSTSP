@@ -7,14 +7,14 @@ import java.util.ArrayList;
 public class RouteToUpdate {
 	public ArrayList<Node> truckRoute;
 	public ArrayList<Subroute> truckSubroutes;
-	public ArrayList<Node> Cprime;
+	public ArrayList<Node> cPrime;
 	public ArrayList<Double> t;
 	
 	/**
 	 * Costruttore
 	 * @param truckRoute la route del truck
 	 * @param truckSubroutes le subroutes del truck
-	 * @param cprime vettore dei noid che possono essere serviti dall'UAV
+	 * @param cPrime vettore dei noid che possono essere serviti dall'UAV
 	 * @param t vettore dei tempi di arrivo
 	 */
 	public RouteToUpdate(ArrayList<Node> truckRoute, ArrayList<Subroute> truckSubroutes, ArrayList<Node> cprime,
@@ -22,7 +22,7 @@ public class RouteToUpdate {
 		super();
 		this.truckRoute = truckRoute;
 		this.truckSubroutes = truckSubroutes;
-		Cprime = cprime;
+		cPrime = cprime;
 		this.t = t;
 	}
 	
