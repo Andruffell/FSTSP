@@ -297,12 +297,12 @@ public class FSTSPsolver {
 		Parser parser = new Parser("./src/data/" + fileName);
 		p = parser.ReadFile();
 
-		long startTSPTime = System.currentTimeMillis();
+		long startTSPTime = System.nanoTime();
 		//Risoluzione del TSP considerando solo il camion tramite euristica nearest neighbour
 		TSPsolver tspNearestNeighbour = new TSPsolver();
 		tspNearestNeighbour.tsp(p.TruckMatrix);
 		
-		long startTime = System.currentTimeMillis();
+		long startTime = System.nanoTime();
 		//Inizializzazione della truck route e del vettore canBeServed
 		ArrayList<Node> truckRoute = new ArrayList<>();
 		ArrayList<Integer> cannotBeServed = new ArrayList<>(p.served);
@@ -363,17 +363,17 @@ public class FSTSPsolver {
 				stop = true;
 			}
 		} while (!stop);
-		long endTime = System.currentTimeMillis();
+		long endTime = System.nanoTime();
 		long timeSpanTSP = startTime-startTSPTime;
 		long timeSpan = endTime-startTime;
 		//Stampa dei risultati
 		
 		System.out.println("Risoluzione TSP");
-		System.out.println("Tempo di esecuzione del TSP: " + timeSpanTSP + "ms");
+		System.out.println("Tempo di esecuzione del TSP: " + timeSpanTSP + "ns");
 		System.out.println("Percorso del TSP : " + tspNearestNeighbour.getList());
 		System.out.println("Tempi di arrivo : " + tspNearestNeighbour.getTempiDiArrivo());
 		System.out.println("\nRisoluzione con UAV");
-		System.out.println("Tempo di esecuzione di FSTSP: " + timeSpan + "ms");
+		System.out.println("Tempo di esecuzione di FSTSP: " + timeSpan + "ns");
 		System.out.println("Saving totale : " + (tspNearestNeighbour.getTempiDiArrivo().get(tspNearestNeighbour.getTempiDiArrivo().size()-1) - t.get(t.size()-1))*60 + " minuti");
 		stampa(truckRoute, truckSubroutes, t);
 	}
