@@ -37,6 +37,14 @@ public class ParserData {
 			this.dim = 0;
 			this.served = new ArrayList<>();
 		}
+
+		public int getSpeedTruck() {
+			return speedTruck;
+		}
+
+		public void setSpeedTruck(int speedTruck) {
+			this.speedTruck = speedTruck;
+		}
 		
 		
 		

@@ -12,7 +12,7 @@ import parser.ParserData;
 
 public class FSTSPsolver {
 
-	public static String fileName = "M5106.txt";
+	public static String fileName = "M5345.txt";
 	
 	private static double sr = 0.016667; //tempo di recupero dell'UAV in numero di ore (0.016 = 1 minuto)
 	private static double sl = 0.016667; //tempo di lancio dell'UAV in numero di ore (0.016 = 1 minuto)
@@ -296,13 +296,14 @@ public class FSTSPsolver {
 		ParserData p = new ParserData();
 		Parser parser = new Parser("./src/data/" + fileName);
 		p = parser.ReadFile();
+		int truckSpeed = p.getSpeedTruck();
 
-		long startTSPTime = System.nanoTime();
+		long startTSPTime = System.currentTimeMillis();
 		//Risoluzione del TSP considerando solo il camion tramite euristica nearest neighbour
 		TSPsolver tspNearestNeighbour = new TSPsolver();
 		tspNearestNeighbour.tsp(p.TruckMatrix);
 		
-		long startTime = System.nanoTime();
+		long startTime = System.currentTimeMillis();
 		//Inizializzazione della truck route e del vettore canBeServed
 		ArrayList<Node> truckRoute = new ArrayList<>();
 		ArrayList<Integer> cannotBeServed = new ArrayList<>(p.served);
@@ -363,19 +364,21 @@ public class FSTSPsolver {
 				stop = true;
 			}
 		} while (!stop);
-		long endTime = System.nanoTime();
+		long endTime = System.currentTimeMillis();
 		long timeSpanTSP = startTime-startTSPTime;
 		long timeSpan = endTime-startTime;
 		//Stampa dei risultati
 		
 		System.out.println("Risoluzione TSP");
-		System.out.println("Tempo di esecuzione del TSP: " + timeSpanTSP + "ns");
+		System.out.println("Tempo di esecuzione del TSP: " + timeSpanTSP + "ms");
 		System.out.println("Percorso del TSP : " + tspNearestNeighbour.getList());
 		System.out.println("Tempi di arrivo : " + tspNearestNeighbour.getTempiDiArrivo());
+		System.out.println("Costo totale: " + tspNearestNeighbour.getTempiDiArrivo().get(tspNearestNeighbour.getTempiDiArrivo().size()-1)*truckSpeed);
 		System.out.println("\nRisoluzione con UAV");
-		System.out.println("Tempo di esecuzione di FSTSP: " + timeSpan + "ns");
+		System.out.println("Tempo di esecuzione di FSTSP: " + timeSpan + "ms");
 		System.out.println("Saving totale : " + (tspNearestNeighbour.getTempiDiArrivo().get(tspNearestNeighbour.getTempiDiArrivo().size()-1) - t.get(t.size()-1))*60 + " minuti");
 		stampa(truckRoute, truckSubroutes, t);
+		System.out.println("Costo totale: " + t.get(t.size()-1)*truckSpeed);
 	}
 	
 	/**
