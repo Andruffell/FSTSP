@@ -12,7 +12,7 @@ import parser.ParserData;
 
 public class FSTSPsolver {
 
-	public static String fileName = "M5345.txt";
+	public static String fileName = "M5321.txt";
 	
 	private static double sr = 0.016667; //tempo di recupero dell'UAV in numero di ore (0.016 = 1 minuto)
 	private static double sl = 0.016667; //tempo di lancio dell'UAV in numero di ore (0.016 = 1 minuto)
@@ -38,7 +38,7 @@ public class FSTSPsolver {
 		
 		//inizializziamo savings sommando i costi per andare da i a j e da j a k e sottraendo il costo di i-k
 		double savings = truckAdjacencyMatrix[iNode.getId()][jNode.getId()] + truckAdjacencyMatrix[jNode.getId()][kNode.getId()] - truckAdjacencyMatrix[iNode.getId()][kNode.getId()];
-		
+		//risparmio se il nodo jNode fosse eliminato dal percorso del truck
 		//per ogni subroute del truck
 		for (Subroute tS : truckSubroutes) {
 			//se contiene il nodo j ed � servita dall'UAV
@@ -66,7 +66,8 @@ public class FSTSPsolver {
 				double ta = t.get(truckRoute.indexOf(a));
 				double tauPrimeAJPrime = UAVadjacencyMatrix[a.getId()][jPrime.getId()];	//costo dell'UAV tra il nodo a e il nodo jPrime
 				double tauPrimeJprimeB = UAVadjacencyMatrix[jPrime.getId()][b.getId()]; //costo dell'UAV tra il nodo jPrime e il nodo b
-				//Aggiornamento di savings che pu� essere negativo se il truck deve aspettare l'arrivo dell'UAV
+ 				//Aggiornamento di savings che pu� essere negativo se il truck deve aspettare l'arrivo dell'UAV 
+				//(minimo tra il tempo del percorso del truck e quello che l'UAV aspetterebbe arrivando prima del truck)
 				savings = Math.min(savings, 
 						  tbPrime - (ta + tauPrimeAJPrime + tauPrimeJprimeB + sr));
 				return savings;
@@ -118,7 +119,7 @@ public class FSTSPsolver {
 					if(savings - cost > maxSavings) {
 						//Salvo i nodi j*, i*, k*
 						jNode.setUAVserved(false);
-						subroute.setUAVserved(false);
+						//subroute.setUAVserved(false);
 						returnVal.jStar = jNode;
 						returnVal.iStar = iNode;
 						returnVal.kStar = kNode;
@@ -170,8 +171,10 @@ public class FSTSPsolver {
 						double negativeTruck = - truckAdjacencyMatrix[iNode.getId()][jNode.getId()] - truckAdjacencyMatrix[jNode.getId()][kNode.getId()];
 						tkPrime +=  negativeTruck + truckAdjacencyMatrix[iNode.getId()][kNode.getId()];
 						//Calcolo il costo
-						double uavcost = Math.max(tkPrime - t.get(truckRoute.indexOf(iNode))+ sr + sl ,tauprimeIJ + tauprimeJK+ sr + sl  );
-						double cost = Math.max(0,uavcost -(tkPrime - t.get(truckRoute.indexOf(iNode))) );
+						double uavcost = Math.max(tkPrime - t.get(truckRoute.indexOf(iNode))+ sr + sl ,tauprimeIJ + tauprimeJK+ sr + sl  ); //massimo tra il tempo di arrivo del truck rimosso j e del drone
+						double cost = Math.max(0,uavcost -(tkPrime - t.get(truckRoute.indexOf(iNode))) ); //massimo tra 0 e il risultato di prima - tempo del truck per andare da i a k
+						//Dunque il costo sarà il max tra il tempo per lanciare e recuperare il drone oppure quel tempo + il tempo che 
+						//il truck attende per l'arrivo dell'UAV 
 						//Se savings meno il costo � maggiore di max savings
 						if ( savings - cost > maxSavings ) {
 							//Salvo i nodi j*, i*, k*
@@ -339,10 +342,10 @@ public class FSTSPsolver {
 				for (Subroute subroute : truckSubroutes) {
 					//Se � servita dall'UAV
 					if (subroute.isUAVserved()) {
-						//Calcola quanto risparmierebbe se non lo fosse
+						//Calcola quanto risparmierebbe se fosse inserito all'interno di una subroute servita dall'UAV
 						nodesToUpdate = calcCostTruck(j, t, subroute, p.TruckMatrix, savings, maxSavings, truckRoute, nodesToUpdate);
 					} else {
-						//Altrimenti calcola quanto risparmierebbe se lo fosse
+						//Altrimenti calcola quanto risparmierebbe se fosse servita da un UAV
 						nodesToUpdate = calcCostUAV(j, t, subroute, p.UAVMatrix, savings, maxSavings, truckRoute, p.TruckMatrix, nodesToUpdate);
 					}
 					//Aggiorna maxSavings

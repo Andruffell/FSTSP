@@ -21,7 +21,7 @@ public class TSPsolver {
     public ArrayList<Double> getTempiDiArrivo() {return tempiDiArrivo;}
     /** 
      * Questa funzione utilizza un'euristica Greedy di tipo nearest neighbour. 
-     * @param adjacencyMatrix che � una matrice quadrata di interi, simmetrica con diagonale principale nulla, la quale rappresenta
+     * @param adjacencyMatrix  matrice quadrata di interi, simmetrica con diagonale principale nulla, la quale rappresenta
      * la matrice di adiacenza di un grafo non orientato.
      */
     public void tsp(double adjacencyMatrix[][])
